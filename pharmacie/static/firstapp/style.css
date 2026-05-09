@@ -1,0 +1,241 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+:root {
+    --color-1:#1A1F2B;
+    --color-2:#ffff;
+    --box-swadow: rgb(11, 11, 221);
+}
+body{
+    font-family: "poppings",sans-serif;
+    background-color: #11151d;
+    display: flex;
+}
+.navigation {
+    position: fixed;
+    width: 250px;
+    height: 100vh;
+    background: var(--color-1);
+    color: var(--color-2);
+    list-style: none;
+    padding-left: 30px;
+    padding-top: 10px;
+    transition: 1s;
+}
+.navigation li {
+    color: var(--color-2);
+    font-weight: 900;
+    font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 50px;
+    text-decoration: none;
+
+}
+.items {
+    position: relative;
+    flex-direction: column;
+    display: flex;
+    width: 238px;
+    color: var(--color-2);
+    padding: 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: 1s;
+}
+.items:nth-child(2) {
+    background-color: #373b4671;
+    color: var(--color-2);
+    box-shadow: var(--box-swadow);
+    width: 100%;
+}
+.items:not(:nth-child(1), :nth-child(2)):hover {
+    background-color: #373b4671;
+    color: var(--color-2);
+    padding-left: 10px;
+}
+.profil {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 400px;
+    width: auto;
+}
+.profil .profil__img{
+    width: 35px;
+    height: 35px;
+    overflow: hidden;
+}
+.profil .profil__img img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    object-fit: cover;
+
+}
+.profil .user {
+    width: 100%;
+    display: flex;
+    gap: 7px;
+}
+.profil .user strong{
+    color: var(--color-2);
+    align-items: center;
+    font-size: 14px;
+    font-weight: 400;
+}
+.profil .user .btn-user a{
+    font-weight: 600;
+    color: var(--color-2);
+}
+/* -----------------------------------------main------------------------------------------------------------------ */
+.header-content {
+    position: relative;
+    left: 250px;
+    width: calc(100% - 250px);
+    height: 100%;
+    background-color: #11151d;
+    padding: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    transition: 1s;
+}
+.header1 {
+    width: 750%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header1 h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--color-2);
+}
+.btn #mode{
+    padding: 3px 6px 3px 6px;
+    background-color: var(--color-2);
+    color: var(--color-1);
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid var(--color-2);
+    border-radius: 6px;
+    margin-right: 4px;
+    cursor: pointer;
+    transition: 1s;
+}
+.btn #add {
+    padding: 5px 20px 10px 20px;
+    background-color: rgb(15, 15, 207);
+    color: var(--color-2);
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid rgb(15, 15, 207);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 1s;
+}
+.btn #add:hover{
+    background-color: var(--color-2);
+    color: rgb(15, 15, 207);
+    border: 1px solid rgb(15, 15, 207); 
+}
+.header2 {
+    margin-top: 20px;
+    width: 750%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header2 .gauche #filter {
+    gap: 4px;
+    padding: 6px 12px 6px 12px;
+    background: var(--color-1);
+    color: var(--color-2);
+    border: var(--color-1);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 1s;
+}
+.header2 form #recherche{
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    border: 1px solid var(--color-1);
+    outline: none;
+    background-color: var(--color-1);
+    color: var(--color-2);
+}
+.header2 form #recherche:hover{
+    border: 1px solid --color-2;
+}
+
+.header2 .gauche #icon {
+    padding: 3px 6px 3px 6px;
+    border-radius: 7px;
+    border: 1px solid var(--color-2);
+    cursor: pointer;
+}
+.header2 #img {
+    padding: 6px 12px 6px 12px;
+    font-weight: 600;
+    background-color: var(--color-1);
+    color: var(--color-2);
+    border: 1px solid #11151d;
+    border-radius: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    object-fit: cover;
+}
+.header2 #img:hover {
+    background-color: var(--color-2);
+    color: var(--color-1);
+    border: 1px solid #11151d;
+}
+/* .other tbody .active{
+    background-color: rgba(2, 77, 2, 0.795);
+    color: green;
+} */
+.app-produit {
+    position: relative;
+    margin-top: 10px;
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    padding: 0.5rem 1px 0.5rem 1px;
+    overflow: hidden;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table thead tr{
+    background-color: var(--color-1);
+    color: var(--color-2);
+    text-align: center;
+}
+table thead tr td{
+    font-weight: 600;
+}
+table tbody tr td{
+    border-bottom: var(--color-2);
+    color: var(--color-2);
+    text-align: center;
+}
+table tbody tr:hover{
+    background-color: var(--color-1);
+}
+table tr td{
+    padding: 10px;
+}
+
+
+
+
+
+

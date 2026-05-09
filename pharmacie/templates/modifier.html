@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>formulaire d'ajout</title>
+    <link rel="stylesheet" href="{% static 'forme.css' %}">
+    <link rel="stylesheet" href="{% static 'poppings.zip' %}">
+</head>
+<body>
+    <h2>Modification du produit</h2>
+    <p>Veuillez<br>Noter que tout les champs sont obligatoire !</p>
+    <div class="container">
+        <form  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %} 
+                        <li {% if message.targs %} class="{{ message.targs }}" {% endif %} style="color: red;">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="form-group">
+                <!-- <label for="nom">Nom du produit</label><br>
+                <input type="text" id="name" name="name" placeholder="Nom du produit" required>
+                {% if errors.name %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.name }}</p>
+                </div>
+                {% endif %} -->
+                {{ form.name }}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                {% if errors.name %}
+                    <div class="error" style="color: red;">{{ errors.name }}</div>
+                {% endif %}
+            
+
+
+                <label for="quantite">Quantité</label><br>
+                <!-- <input type="text" id="quantite" name="quantite" placeholder="Nombre du quantité" required>
+                {% if errors.quantite %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.quantite }}</p>
+                </div>
+                {% endif %} -->
+                {{ form.quantite }}
+                    <div class="text-danger">{{ form.quantite.errors }}</div>
+                {% if errors.name %}
+                    <div class="error" style="color: red;">{{ errors.quantite }}</div>
+                {% endif %}
+
+
+            </div>
+            <div class="form-group">
+                <label for="category">Categorie</label><br>
+                <!-- <select name="category" id="category">
+                    {% for category in category %}
+                    <option value="{{ category.pk }}">{{ category.name }}</option>
+                    {% endfor %} 
+                </select>
+                {% if errors.category %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.category }}</p>
+                </div>
+                {% endif %} -->
+                {{ form.categorie }}
+                    <div class="text-danger">{{ form.category.errors }}</div>
+                {% if errors.category %}
+                    <div class="error" style="color: red;">{{ errors.category }}</div>
+                {% endif %}
+                
+
+                <label for="prix">Prix</label><br>
+                <!-- <input type="number" id="price" name="price" placeholder="prix du produit" required>
+                {% if errors.price %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.price }}</p>
+                </div>
+                {% endif %} -->
+                {{ form.price }}
+                    <div class="text-danger">{{ form.prix.errors }}</div>
+                {% if errors.prix %}
+                    <div class="error" style="color: red;">{{ errors.prix }}</div>
+                {% endif %}
+              
+
+
+            </div>
+            <div class="row">
+                <label for="image">Image</label><br>
+                <!-- <input type="file" id="image" name="image" required>
+                {% if errors.image %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.image }}</p>
+                </div>
+                {% endif %} -->
+                {% if produit.image %}
+                    <img src="{{ produit.get_image_url }}" alt="image" width="100px" height="100px">
+                {% endif %}
+                {% if error.image %}
+                    <div class="error" style="color: red;">{{ errors.image }}</div>
+                {% endif %}
+                {{ form.image }}
+                    <div class="text-danger">{{ form.errors.image }}</div>
+                
+              
+
+
+                <label for="description">Description</label><br>
+                <!-- <textarea name="description" id="description" required></textarea>
+                {% if errors.description %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.description }}</p>
+                </div>
+                {% endif %} -->
+                {{ form.description }}
+                    <div class="text-danger">{{ form.description.errors }}</div>
+                {% if errors.description %}
+                    <div class="error" style="color: red;">{{ errors.description }}</div>
+                {% endif %}
+
+                <label for="date-expiration">Date d'expiration</label><br>
+                <!-- <input type="text" id="date-expiration" name="date-expiration" placeholder="Date d'expiration du produit" required>
+                {% if errors.date_expiration %}
+                <div class="error" style="color: red;">
+                    <p>{{ errors.date_expiration }}</p>
+                </div>
+                {% endif %} -->
+                {{ form.date_expiration }}
+                    <div class="text-danger" style="color: red;">{{ form.date_expiration.errors }}</div>
+                {% if errors.date_expiration %}
+                    <div class="error" style="color: red;">{{ errors.date_expiration }}</div>
+                {% endif %}
+            </div>
+            <button type="submit">Enregistrer</button>
+        </form>
+    </div>
+</body>
+</html>

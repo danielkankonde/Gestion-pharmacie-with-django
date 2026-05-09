@@ -1,0 +1,80 @@
+    <!--  --------------------------------produit------------------------------------------- -- -->
+{% extends 'base.html' %}
+{% block content %}
+{% if produit.quantite == 0 %}
+<h3 style="color: red;">Le produit {{ produit.name }} n'est pas disponible</h3>
+<div class="btn">
+    <a href="{% url 'ajout_produit' %}" id="add">Ajout {{ produit.name }}</a>
+</div>
+{% elif produit.quantite <= 5 %}
+<h3 style="color: yellow;">Le stock du produit {{ produit.name }} est bas</h3>
+<div class="btn">
+    <a href="{% url 'ajoutvente' produit.id %}" id="add">Vendre {{ produit.name }}</a>
+</div>
+{% else %}
+<h3 style="color: green;">Le produit peut etre vendu</h3>
+<div class="btn">
+    <a href="{% url 'ajoutvente' produit.id %}" id="add">Vendre {{ produit.name }}</a>
+</div>
+{% endif %}
+    <style>
+        .daniel{
+            padding: 5px 10px;
+            font-weight: bold;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+        }
+        .red {
+        background-color: red;
+    }
+        .orange {
+        background-color: orange;
+    }
+        .green {
+        background-color: green;
+    }
+        .rhema {
+            font-size: 10px;
+        }
+    
+       </style>
+        {% if messages %}
+           <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.targs %} class="{{ message.targs }}" {% endif %} style="color: green;">
+                {{ message }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="app-produit">
+            <h1>Voir le detail de ce produit</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Nom du produit</td>
+                        <td>categories</td>
+                        <td>Status et Quantité</td>
+                        <td>Prix</td>
+                        <td>Description</td>
+                        <td>Date Ajout</td>
+                        <td>Date Expiration</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="{{ produit.get_image_url }}" alt="user" width="30px" height="30px">
+                            {{ produit.name }}
+                        </td>
+                        <td>{{ produit.categorie }}</td>
+                        <td class="eben"><button class="daniel {{ produit.statut_quantite }}"></button><strong class="rhema">{{ produit.quantite }}</strong></td>
+                        <td>{{ produit.price }}</td>
+                        <td>{{ produit.description }}</td>
+                        <td>{{ produit.date_ajout }}</td>
+                        <td>{{ produit.date_expiration }}</td>
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

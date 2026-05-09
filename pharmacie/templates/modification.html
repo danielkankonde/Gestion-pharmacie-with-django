@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>formulaire d'ajout</title>
+    <link rel="stylesheet" href="{% static 'forme.css' %}">
+    <link rel="stylesheet" href="{% static 'poppings.zip' %}">
+</head>
+<body>
+    <h2>Ajout de produits</h2>
+    <p>Veuillez<br>Noter que tout les champs sont obligatoire !</p>
+    <div class="container">
+        <form  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %} 
+                        <li {% if message.targs %} class="{{ message.targs }}" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="form-group">
+                <label for="nom">Nom du produit</label><br>
+                <input type="text" id="name" value="{{ produit.name }}" name="name" placeholder="Nom du produit" required>
+                {% if errors.name %}
+                    <ul>
+                        <li><div class="text-danger" style="color: red;">{{ errors.name }}</div></li>
+                    </ul>
+                {% endif %}
+                 <!-- {{ form.name }}
+            <div class="text-danger" style="color: red;">{{ form.nom.errors }}</div> -->
+
+
+                <label for="quantite">Quantité</label><br>
+                <input type="text" id="quantite" value="{{ produit.quantite }}" name="quantite" placeholder="Nombre du quantité" required>
+                {% if errors.quantite %}
+                    <ul>
+                        <li><div class="text-danger" style="color: red;">{{ errors.quantite }}</div></li>
+                    </ul>
+                {% endif %}
+                <!-- {{ form.quantite }}
+            <div class="text-danger" style="color: red;">{{ form.quantite.errors }}</div> -->
+
+            </div>
+            <div class="form-group">
+                <label for="category">Categorie</label><br>
+                <select name="category" id="category">
+                    {% for categorie in categorie %}
+                    <option value="{{ categorie.pk }}"
+                    {% if categorie.pk == produit.categorie.pk %}
+                    selected
+                    >{{ categorie.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select> 
+                {% if errors.categorie %}
+                    <ul>
+                        <li><div class="text-danger" style="color: red;">{{ errors.categorie }}</div></li>
+                    </ul>
+                {% endif %}
+                <!-- {{ form.categorie }}
+                <div class="text-danger" style="color: red;">{{ form.categorie.errors }}</div> -->
+
+                <label for="prix">Prix</label><br>
+                <input type="number" id="price" value="{{ produit.price }}" name="price" placeholder="prix du produit" required>
+                <!-- {{ form.price }}
+                <div class="text-danger" style="color: red;">{{ form.price.errors }}</div> -->
+
+
+            </div>
+            <div class="row">
+                <label for="image">Image</label><br>
+                {% if produit.image %}
+                    <img src="{{ produit.get_image_url }}" alt="image" width="100px" height="100px">
+                {% endif %}
+                <input type="file" id="image" name="image" required>
+                {% if errors.image %}
+                    <ul>
+                        <li><div><div class="text-danger" style="color: red;">{{ errors.image }}</div></div></li>
+                    </ul>
+                {% endif %}
+                <!-- {{ form.image }}
+                <div class="text-danger" style="color: red;">{{ form.image.errors }}</div> -->
+
+
+                <label for="description">Description</label><br>
+                <textarea name="description" value="{{ produit.description}}" id="description" required></textarea>
+                {% if errors.description %}
+                    <ul>
+                        <li><div><div class="text-danger" style="color: red;">{{ errors.description }}</div></div></li>
+                    </ul>
+                {% endif %}
+                <!-- {{ form.description }}
+                <div class="text-danger" style="color: red;">{{ form.description.errors }}</div> -->
+
+                <label for="date-expiration">Date d'expiration</label><br>
+                <input type="date" id="date-expiration" name="date-expiration" placeholder="Date d'expiration du produit" required>
+                {% if errors.date_expiration %}
+                    <ul>
+                        <li><div><div class="text-danger" style="color: red;">{{ errors.date_expiration }}</div></div></li>
+                    </ul>
+                {% endif %}
+                 <!-- {{ form.date_expiration }}
+                 <div class="text-danger" style="color: red;">{{ form.date_expiration.errors }}</div> -->
+            </div>
+            <button type="submit">Enregistrer</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: url(./assets/Poppins.zip);
+}
+body {
+    background-color: #eeeaea;
+    min-height: 100vh;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 850px;
+    height: 600px;
+    background-color: #fff;
+    box-shadow:-5px 0px 6px 0px rgb(#fff, #fff,#ccc);
+    border-radius: 7px;
+}
+img {
+    width: 50px;
+    height: 70px;
+    border-radius: 50px;
+    margin-left: 70px;
+    margin-top: 210px;
+}
+#rs {
+    width: 250px;
+    height: 200px;
+    overflow: hidden;
+    object-fit: cover;
+}
+.autre{
+    display: flex;
+    flex-direction: column;
+    min-height: 50px;
+    opacity: 0.7;
+    transition: 1s;
+}
+.autre p {
+    margin-top: 50px;
+}
+.autre a {
+    margin-top: 150px;
+    margin-left: 50px;
+    overflow: hidden ;
+    object-fit: cover;
+    color: #000;
+    text-align: center;
+    opacity: 1;
+}
+.autre a:hover {
+    color: rgb(19, 19, 192);
+}
+/* -------------------------ici formulaire------------------------------- */
+.alert {
+    font-size: 14px;
+}
+.form-connect {
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+    margin: auto;
+    height: auto;
+}
+.form-connect h3 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 1.3px;
+}
+.form-connect form {
+    position: fixed;
+    margin-top: 40px;
+}
+.form-connect form input {
+    display: flex;
+    width: 350px;
+    height: 40px;
+    border: 1px solid #ccc;
+    flex-direction: column;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    padding: 0.5rem;
+    background-color: #dfd3d3;
+}
+.form-connect form input:focus{
+    border: 1px solid #ccc;
+    transition: 1s;
+}
+.form-connect form input:hover{
+    transition: 1s;
+}
+.form-connect form button{
+    padding: _PX;
+    background-color: rgb(127, 233, 127);
+    color: white;   
+    border-radius: 20px;
+    transition: 0.3s;
+    border: 1px solid #ccc;
+    width: 350px;
+    height: 35px;
+    border-radius: 10px;
+    opacity: 0.8;
+}
+.form-connect form button:hover{
+    border: 1px solid #ccc;
+    opacity: 1;
+    transition: 1s;
+}
+
+    
+
+
+

@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'assets/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'secondapp/style.css' %}">
+    
+</head>
+<body>
+    <main>
+        <div class="content">
+            <div class="autre">
+                <div class="img">
+                    <img src="{% static 'assets/facebook.png'%}" alt="user" id="rs">
+                </div>
+                    <p><a href="{% url 'login' %}">Créer un compte ici</a></p>
+            </div>
+            <div class="form-connect">
+                <h3>Vérification Email</h3>
+                <form action="" method="post">
+                    {% if messages %}
+                    {% for message in messages %}
+                        <h5 class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </h5>
+                    {% endfor %}
+                    {% endif %}
+                    {% csrf_token %}
+                    <input type="email" placeholder="Entrez votre une adresse email" name="email" id="email">
+                    <button type="submit">Vérifier</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

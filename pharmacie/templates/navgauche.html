@@ -1,0 +1,26 @@
+    <!-- -------------------------------la partie gauche------------------------------>
+{% load static %}
+    <div class="navigation">
+        <li>Dashboard</li>
+        <a href="{% url 'acc' %}" class="items">
+            <span>Home</span>
+        </a>
+        <a href="{% url 'home' %}" class="items">
+            <span>Produits</span>
+        </a>
+        <a href="#">
+            <div class="profil">
+                <div class="profil__img">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'deconnection' %}">
+                    <img src="{% static 'assets/img/toussaint.jpg' %}" alt="user">
+                </div>
+                <div class="user">
+                    <strong style="color:white">{{ request.user }}</strong>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+    
+        </a> 
+    </div>

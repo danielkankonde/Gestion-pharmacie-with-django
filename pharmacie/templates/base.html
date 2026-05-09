@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gestion pharmacie</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'firstapp/style.css' %}">
+    
+</head>
+<body>
+     <!-- -------------------------------la partie gauche------------------------------>
+        {% include 'navgauche.html' %}
+
+    <div class="header-content">
+        {% include 'header1.html' %}
+        {% include 'header2.html' %}
+        
+
+    
+        
+        {% block content %}
+
+
+        {% endblock content %}
+    </div>
+    <script src="{% static 'boostrap/bootstrap.min.js' %}"></script>
+</body>
+</html>

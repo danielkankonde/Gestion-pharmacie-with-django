@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'assets/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'secondapp/style.css' %}">
+    
+</head>
+<body>
+    <main>
+        <div class="content">
+            <div class="autre">
+                <div class="img">
+                    <img src="{% static 'assets/facebook.png'%}" alt="user" id="rs">
+                </div>
+            </div>
+            <div class="form-connect">
+                <h3>Modification de mot de passe</h3>
+                <form action="" method="post">
+                    {% if messages %}
+                    {% for message in messages %}
+                        <h5 class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </h5>
+                    {% endfor %}
+                {% endif %}
+                    {% csrf_token %}
+                    <input type="password" placeholder="Entrez un mot de passe" name="password" id="password">
+                    <input type="password" placeholder="Confirmer votre mot de passe" name="password_confirm" id="password_confirm">
+                    <button type="submit">Modifier</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
