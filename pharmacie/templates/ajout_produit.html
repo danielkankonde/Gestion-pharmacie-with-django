@@ -1,139 +1,222 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>formulaire d'ajout</title>
-    <link rel="stylesheet" href="{% static 'forme.css' %}">
-    <link rel="stylesheet" href="{% static 'poppings.zip' %}">
-</head>
-<body>
-    <h2>Ajout de produits</h2>
-    <p>Veuillez<br>Noter que tout les champs sont obligatoire !</p>
-    <div class="container">
-        <form  method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %} 
-                        <li {% if message.targs %} class="{{ message.targs }}" {% endif %} style="color: red;">
-                            {{ message }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <div class="form-group">
-                <!-- <label for="nom">Nom du produit</label><br>
-                <input type="text" id="name" name="name" placeholder="Nom du produit" required>
-                {% if errors.name %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.name }}</p>
-                </div>
-                {% endif %} -->
-                {{ form.name }}
-                    <div class="text-danger">{{ form.name.errors }}</div>
-                {% if errors.name %}
-                    <div class="error" style="color: red;">{{ errors.name }}</div>
-                {% endif %}
-            
+{% extends "base_app.html" %}
 
+{% block titre %}Ajouter un médicament{% endblock %}
 
-                <label for="quantite">Quantité</label><br>
-                <!-- <input type="text" id="quantite" name="quantite" placeholder="Nombre du quantité" required>
-                {% if errors.quantite %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.quantite }}</p>
-                </div>
-                {% endif %} -->
-                {{ form.quantite }}
-                    <div class="text-danger">{{ form.quantite.errors }}</div>
-                {% if errors.name %}
-                    <div class="error" style="color: red;">{{ errors.quantite }}</div>
-                {% endif %}
+{% block content %}
 
+<div class="container-fluid">
 
-            </div>
-            <div class="form-group">
-                <label for="category">Categorie</label><br>
-                <!-- <select name="category" id="category">
-                    {% for category in category %}
-                    <option value="{{ category.pk }}">{{ category.name }}</option>
-                    {% endfor %} 
-                </select>
-                {% if errors.category %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.category }}</p>
-                </div>
-                {% endif %} -->
-                <div class="form-control">{{ form.categorie }}</div>
-                    <div class="text-danger">{{ form.category.errors }}</div>
-                {% if errors.category %}
-                    <div class="error" style="color: red;">{{ errors.category }}</div>
-                {% endif %}
-                
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-                <label for="prix">Prix</label><br>
-                <!-- <input type="number" id="price" name="price" placeholder="prix du produit" required>
-                {% if errors.price %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.price }}</p>
-                </div>
-                {% endif %} -->
-                {{ form.price }}
-                    <div class="text-danger">{{ form.prix.errors }}</div>
-                {% if errors.prix %}
-                    <div class="error" style="color: red;">{{ errors.prix }}</div>
-                {% endif %}
-              
+        <div>
+            <h2 class="fw-bold mb-1">Ajouter un médicament</h2>
+            <p class="text-muted mb-0">
+                Enregistrez un nouveau médicament dans votre pharmacie.
+            </p>
+        </div>
 
+        <a href="{% url 'liste_produit' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
 
-            </div>
-            <div class="row">
-                <label for="image">Image</label><br>
-                <!-- <input type="file" id="image" name="image" required>
-                {% if errors.image %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.image }}</p>
-                </div>
-                {% endif %} -->
-                {% if error.image %}
-                    <div class="error" style="color: red;">{{ errors.image }}</div>
-                {% endif %}
-                {{ form.image }}
-                    <div class="text-danger">{{ form.errors.image }}</div>
-                
-              
-
-
-                <label for="description">Description</label><br>
-                <!-- <textarea name="description" id="description" required></textarea>
-                {% if errors.description %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.description }}</p>
-                </div>
-                {% endif %} -->
-                {{ form.description }}
-                    <div class="text-danger">{{ form.description.errors }}</div>
-                {% if errors.description %}
-                    <div class="error" style="color: red;">{{ errors.description }}</div>
-                {% endif %}
-
-                <label for="date-expiration">Date d'expiration</label><br>
-                <!-- <input type="text" id="date-expiration" name="date-expiration" placeholder="Date d'expiration du produit" required>
-                {% if errors.date_expiration %}
-                <div class="error" style="color: red;">
-                    <p>{{ errors.date_expiration }}</p>
-                </div>
-                {% endif %} -->
-            {{ form.date_expiration }}
-                    <div class="text-danger" style="color: red;">{{ form.date_expiration.errors }}</div>
-                {% if errors.date_expiration %}
-                    <div class="error" style="color: red;">{{ errors.date_expiration }}</div>
-                {% endif %}
-            </div>
-            <button type="submit">Enregistrer</button>
-        </form>
     </div>
-</body>
-</html>
+
+    <!-- Formulaire -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-capsule text-primary"></i>
+                Informations du médicament
+            </h5>
+        </div>
+
+        <div class="card-body p-4">
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <!-- Erreurs générales -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Informations générales -->
+                <h6 class="text-primary fw-bold mb-3">
+                    Informations générales
+                </h6>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.name.label }} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.name }}
+                        <div class="text-danger small">{{ form.name.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.dci.label }}
+                        </label>
+                        {{ form.dci }}
+                        <div class="text-danger small">{{ form.dci.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.dosage.label }}
+                        </label>
+                        {{ form.dosage }}
+                        <div class="text-danger small">{{ form.dosage.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.forme.label }}
+                        </label>
+                        {{ form.forme }}
+                        <div class="text-danger small">{{ form.forme.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.categorie.label }} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.categorie }}
+                        <div class="text-danger small">{{ form.categorie.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.code_barres.label }}
+                        </label>
+                        {{ form.code_barres }}
+                        <div class="text-danger small">{{ form.code_barres.errors }}</div>
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Informations commerciales -->
+                <h6 class="text-primary fw-bold mb-3">
+                    Informations commerciales et stock
+                </h6>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.prix_vente.label }} <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            {{ form.prix_vente }}
+                            <span class="input-group-text">CDF</span>
+                        </div>
+                        <div class="text-danger small">{{ form.prix_vente.errors }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            {{ form.seuil_alerte.label }}
+                        </label>
+                        {{ form.seuil_alerte }}
+                        <div class="form-text">
+                            Quantité minimale avant une alerte de stock.
+                        </div>
+                        <div class="text-danger small">{{ form.seuil_alerte.errors }}</div>
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Description -->
+                <h6 class="text-primary fw-bold mb-3">
+                    Description et image
+                </h6>
+
+                <div class="row g-3">
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">
+                            {{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        <div class="text-danger small">{{ form.description.errors }}</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">
+                            {{ form.image.label }}
+                        </label>
+                        {{ form.image }}
+                        <div class="text-danger small">{{ form.image.errors }}</div>
+                    </div>
+
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Options -->
+                <h6 class="text-primary fw-bold mb-3">
+                    Paramètres du médicament
+                </h6>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            {{ form.sous_ordonnance }}
+                            <label class="form-check-label">
+                                {{ form.sous_ordonnance.label }}
+                            </label>
+                        </div>
+                        <div class="text-danger small">
+                            {{ form.sous_ordonnance.errors }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            {{ form.actif }}
+                            <label class="form-check-label">
+                                {{ form.actif.label }}
+                            </label>
+                        </div>
+                        <div class="text-danger small">
+                            {{ form.actif.errors }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Boutons -->
+                <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <a href="{% url 'liste_produit' %}"
+                       class="btn btn-light border">
+                        Annuler
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-circle"></i>
+                        Enregistrer le médicament
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

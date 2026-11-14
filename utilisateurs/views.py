@@ -1,118 +1,132 @@
-from django.shortcuts import render,redirect
-from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.utils.functional import cached_property
+from django.views.decorators.http import require_POST
+from django.views.generic import CreateView, FormView, ListView, UpdateView
 
-import re
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
+from .forms import (
+    ChangerMotDePasseForm,
+    ConnexionForm,
+    ReinitMotDePasseForm,
+    UtilisateurCreationForm,
+    UtilisateurModificationForm,
+)
+from .permissions import ProprietaireRequisMixin, proprietaire_requis
 
-
-# Create your views here.
-def create_account(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password = request.POST["password"]
-        password_confirm = request.POST["password-confirm"]
-
-        if password != password_confirm:
-            messages.error(request, "Les mots de passe ne sont identiques. Veuillez réessayer.")
-            return redirect("creation")
-        
-        if len(password) < 8 or not re.search(r'[A-Za-z]', password) or not re.search(r'\d',password) or not re.search(r'[!@a$%(),.?":{}|`<>]'):
-            messages.error(request, "Le mot de passe doit contenir au moins 8 caractères, incluent des lettres, des chiffres et des caractères spéciaux")
-            return redirect("creation")
-        try:
-            validate_email(email)
-        except ValidationError:
-            messages.error(request, "L'addresse e-mail invalide, Veuillez réessayer. ")
-
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Ce nom de l'utilisateur existe déjà, Veuillez réessayer.")
-            return redirect("creation")
-        
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Cette adresse e-mail est déjà utilisée. Veuillez en choisir une autre")
-            return redirect("creation")
-        
-        User.objects.create_user(username=username, email=email, password=password)
-        messages.success(request, "Compte crée avec succès. Connectez-vous maintenant")
-        return redirect("login")
-    
-    return render(request, "create_account.html")
+User = get_user_model()
 
 
-def connect_account(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+class Connexion(LoginView):
+    """Page de connexion. Un utilisateur déjà connecté est renvoyé à l'accueil."""
 
-        user = authenticate(request, username = username, password = password)
+    template_name = "utilisateurs/login.html"
+    authentication_form = ConnexionForm
+    redirect_authenticated_user = True
 
-        if user is not None:
-            login(request, user)
-            return redirect('acc')
-        else:
-            messages.error(request,"Le nom d'utilisateur ou mot de passe est incorrect")
-            return redirect("login")
-    return render(request, "login.html")
 
-# fonction pour la verification email
-def verificationEmail(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
+class ListeUtilisateurs(ProprietaireRequisMixin, ListView):
+    model = User
+    template_name = "utilisateurs/liste.html"
+    context_object_name = "utilisateurs"
+    ordering = ["-is_active", "-is_superuser", "first_name", "username"]
 
-        if not email:
-            messages.error(request, "Veuillez rentrer un email valide !")
-            return (request, "verification.html")
-        
-        user = User.objects.filter(email = email).first
-        if user:
-            return redirect("modifierCode", email = email)
-        else:
-            messages.error(request, "Nom d'utilisateur introuvable, veuillez reesayer ou créer un autre compte")
-            return redirect("verification")
-        
-    return render(request, "verification.html")
 
-# fonction pour modifier le mot de passe
-def modifierCode(request, email):
-
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        messages.error(request, "L'utilisateur est introuvable")
-        return redirect("verification")
-    
-    if request.method == "POST":
-        password = request.POST.get("password")
-        password_confirm = request.POST.get("password_confirm")
-
-        if password == password_confirm:
-            if len(password) < 8:
-                messages.error(request, "Le mot de passe doit contenir au moins 8 caractères !")
-            elif not any(char.isdigit() for char in password):
-                messages.error("Le mot de passe doit contenir au moins un chiffre")
-            elif not any(char.isalpha() for char in password):
-                messages.error(request, "Le mot de passe doit conténir au moins une lettre")
-            else:
-                user.set_password(password)
-                user.save()
-                return redirect("login")
-        else:
-            messages.error(request, "Le mot de passe ne correspondent pas, Réessayer !")
-        
-    context = {
-        'email': email,        
+class CreerUtilisateur(ProprietaireRequisMixin, SuccessMessageMixin, CreateView):
+    form_class = UtilisateurCreationForm
+    template_name = "utilisateurs/formulaire.html"
+    success_url = reverse_lazy("utilisateurs_liste")
+    success_message = "Le compte « %(username)s » a été créé."
+    extra_context = {
+        "titre": "Nouvel utilisateur",
+        "sous_titre": "Créez un compte pour une personne qui utilisera l’application.",
+        "bouton": "Créer le compte",
+        "retour": reverse_lazy("utilisateurs_liste"),
     }
-    return render(request, "modificationCode.html", context)
-
-# fonction pour se déconnecter
-def deconnexion(request):
-
-    logout(request)
-    return redirect('login')
 
 
+class ModifierUtilisateur(ProprietaireRequisMixin, SuccessMessageMixin, UpdateView):
+    model = User
+    form_class = UtilisateurModificationForm
+    template_name = "utilisateurs/formulaire.html"
+    success_url = reverse_lazy("utilisateurs_liste")
+    success_message = "Le compte « %(username)s » a été mis à jour."
 
+    def get_context_data(self, **kwargs):
+        contexte = super().get_context_data(**kwargs)
+        nom = self.object.get_full_name() or self.object.username
+        contexte.update(
+            titre=f"Modifier {nom}",
+            bouton="Enregistrer",
+            retour=reverse_lazy("utilisateurs_liste"),
+        )
+        return contexte
+
+
+class ReinitialiserMotDePasse(ProprietaireRequisMixin, FormView):
+    """Le propriétaire choisit un nouveau mot de passe pour un utilisateur."""
+
+    form_class = ReinitMotDePasseForm
+    template_name = "utilisateurs/formulaire.html"
+    success_url = reverse_lazy("utilisateurs_liste")
+
+    @cached_property
+    def cible(self):
+        return get_object_or_404(User, pk=self.kwargs["pk"])
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.cible
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        contexte = super().get_context_data(**kwargs)
+        nom = self.cible.get_full_name() or self.cible.username
+        contexte.update(
+            titre=f"Nouveau mot de passe pour {nom}",
+            sous_titre="Communiquez-lui ensuite ce mot de passe de vive voix.",
+            bouton="Changer le mot de passe",
+            retour=reverse_lazy("utilisateurs_liste"),
+        )
+        return contexte
+
+    def form_valid(self, form):
+        form.save()
+        nom = self.cible.get_full_name() or self.cible.username
+        messages.success(self.request, f"Le mot de passe de {nom} a été changé.")
+        return super().form_valid(form)
+
+
+@proprietaire_requis
+@require_POST
+def basculer_actif(request, pk):
+    """Désactive ou réactive un compte (on ne supprime jamais : l'historique est conservé)."""
+    cible = get_object_or_404(User, pk=pk)
+    nom = cible.get_full_name() or cible.username
+
+    if cible == request.user:
+        messages.error(request, "Vous ne pouvez pas désactiver votre propre compte.")
+    else:
+        cible.is_active = not cible.is_active
+        cible.save(update_fields=["is_active"])
+        etat = "réactivé" if cible.is_active else "désactivé"
+        messages.success(request, f"Le compte de {nom} a été {etat}.")
+    return redirect("utilisateurs_liste")
+
+
+class MonMotDePasse(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
+    """Chaque utilisateur peut changer son propre mot de passe."""
+
+    form_class = ChangerMotDePasseForm
+    template_name = "utilisateurs/formulaire.html"
+    success_url = reverse_lazy("acc")
+    success_message = "Votre mot de passe a été modifié."
+    extra_context = {
+        "titre": "Changer mon mot de passe",
+        "bouton": "Enregistrer",
+        "retour": reverse_lazy("acc"),
+    }

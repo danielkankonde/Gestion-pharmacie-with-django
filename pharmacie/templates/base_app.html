@@ -1,0 +1,117 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titre %}Accueil{% endblock %} · Gestion Pharmacie</title>
+    <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+{% include "partials/icones.html" %}
+{% with nom=request.resolver_match.url_name %}
+<div class="app" id="app">
+
+  <aside class="sidebar">
+    <div class="marque">
+      <span class="logo"><svg class="ico"><use href="#i-croix"/></svg></span>
+      <span>Gestion Pharmacie</span>
+    </div>
+
+    <nav class="menu">
+      <a href="{% url 'dashboard' %}" class="{% if nom == 'dashboard' %}actif{% endif %}">
+        <svg class="ico"><use href="#i-home"/></svg>Accueil
+      </a>
+      <a href="{% url 'liste_produit' %}">
+        <svg class="ico"><use href="#i-box"/></svg>Produits
+      </a>
+      <p class="menu-label mt-4">GESTION</p>
+
+        <a href="#" class="sidebar-link">
+            <span>▤</span>
+            Stocks
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <span>↗</span>
+            Ventes
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <span>▧</span>
+            Fournisseurs
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <span>♙</span>
+            Clients
+        </a>
+
+      {% if user.is_superuser %}
+        <p class="menu-titre">Administration</p>
+        <a href="{% url 'utilisateurs_liste' %}" class="{% if nom == 'utilisateurs_liste' or nom == 'utilisateur_creer' or nom == 'utilisateur_modifier' or nom == 'utilisateur_motdepasse' %}actif{% endif %}">
+          <svg class="ico"><use href="#i-users"/></svg>Utilisateurs
+        </a>
+      {% endif %}
+    </nav>
+
+    <div class="profil">
+      <div class="profil-info">
+        <div class="avatar">{{ user.first_name|default:user.username|slice:":1"|upper }}</div>
+        <div>
+          <div class="profil-nom">{{ user.get_full_name|default:user.username }}</div>
+          <div class="profil-role">{% if user.is_superuser %}Propriétaire{% else %}Vendeur{% endif %}</div>
+        </div>
+      </div>
+      <a class="profil-lien" href="{% url 'mot_de_passe' %}">
+        <svg class="ico"><use href="#i-key"/></svg>Mon mot de passe
+      </a>
+      <form method="post" action="{% url 'deconnection' %}">
+        {% csrf_token %}
+        <button type="submit" class="profil-lien">
+          <svg class="ico"><use href="#i-logout"/></svg>Déconnexion
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="voile" id="voile"></div>
+
+  <div style="flex:1;min-width:0">
+    <div class="topbar">
+      <button type="button" class="burger" id="burger" aria-label="Ouvrir le menu">
+        <svg class="ico"><use href="#i-menu"/></svg>
+      </button>
+      <span>Gestion Pharmacie</span>
+    </div>
+
+    <main class="contenu">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alerte alerte-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}
+      
+      {% endblock %}
+    </main>
+  </div>
+
+</div>
+{% endwith %}
+
+<script>
+  (function () {
+    var app = document.getElementById('app');
+    document.getElementById('burger').addEventListener('click', function () {
+      app.classList.toggle('menu-ouvert');
+    });
+    document.getElementById('voile').addEventListener('click', function () {
+      app.classList.remove('menu-ouvert');
+    });
+  })();
+</script>
+</body>
+</html>

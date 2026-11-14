@@ -10,21 +10,173 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from datetime import timedelta
+from django.db.models import Sum, F, Q, DecimalField, ExpressionWrapper
+from django.shortcuts import render
+from django.utils import timezone
+from django.db.models import Sum, F, DecimalField, ExpressionWrapper
+from .models import LigneVente
+from .models import (
+    Produit,
+    Categorie,
+    Client,
+    Vente,
+    Lot,
+)
 
 
 @login_required(login_url='login')
-def acc(request): 
-    return render(request, "acc.html")
+def dashboard(request):
+
+    aujourd_hui = timezone.localdate()
+    dans_30_jours = aujourd_hui + timedelta(days=30)
+
+    # ==========================================
+    # 1. STATISTIQUES GENERALES
+    # ==========================================
+
+    total_produits = Produit.objects.filter(actif=True).count()
+
+    total_categories = Categorie.objects.count()
+
+    total_clients = Client.objects.count()
+
+    # ==========================================
+    # 2. STATISTIQUES DES VENTES
+    # ==========================================
+
+    ventes_du_jour = Vente.objects.filter(
+        date__date=aujourd_hui
+    )
+
+    total_ventes_jour = ventes_du_jour.count()
+
+    chiffre_affaires_jour = ventes_du_jour.aggregate(
+        total=Sum('total')
+    )['total'] or 0
+
+    # Chiffre d'affaires global
+    chiffre_affaires_total = Vente.objects.aggregate(
+        total=Sum('total')
+    )['total'] or 0
+
+    # ==========================================
+    # 3. STATISTIQUES DU STOCK
+    # ==========================================
+
+    produits_stock = Produit.objects.filter(actif=True).annotate(
+        stock_actuel=Sum(
+            'lots__quantite',
+            filter=Q(lots__date_expiration__gte=aujourd_hui)
+        )
+    )
+
+    produits_rupture = produits_stock.filter(
+        Q(stock_actuel=0) | Q(stock_actuel__isnull=True)
+    ).count()
+
+    produits_stock_bas = produits_stock.filter(
+        stock_actuel__gt=0,
+        stock_actuel__lte=F('seuil_alerte')
+    ).count()
+
+    # Quantité totale disponible
+    stock_total = Lot.objects.filter(
+        date_expiration__gte=aujourd_hui
+    ).aggregate(
+        total=Sum('quantite')
+    )['total'] or 0
+
+    # Valeur du stock au prix d'achat
+    valeur_stock = Lot.objects.filter(
+        date_expiration__gte=aujourd_hui
+    ).aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                F('quantite') * F('prix_achat'),
+                output_field=DecimalField(max_digits=20, decimal_places=2)
+            )
+        )
+    )['total'] or 0
+
+    # ==========================================
+    # 4. LOTS QUI EXPIRENT BIENTOT
+    # ==========================================
+
+    lots_expiration = Lot.objects.filter(
+        date_expiration__gte=aujourd_hui,
+        date_expiration__lte=dans_30_jours,
+        quantite__gt=0
+    ).select_related('produit').order_by('date_expiration')
+
+    # ==========================================
+    # 5. DERNIERES VENTES
+    # ==========================================
+
+    dernieres_ventes = Vente.objects.select_related(
+        'client',
+        'vendeur'
+    ).order_by('-date')[:5]
+
+    # ==========================================
+    # 7. TOP 5 DES MEDICAMENTS LES PLUS VENDUS
+    # ==========================================
+
+    top_medicaments = LigneVente.objects.values(
+        'produit_id',
+        'produit__name',
+        'produit__dosage'
+    ).annotate(
+        quantite_vendue=Sum('quantite'),
+
+        chiffre_affaires=Sum(
+            ExpressionWrapper(
+                F('quantite') * F('prix_unitaire'),
+                output_field=DecimalField(
+                    max_digits=20,
+                    decimal_places=2
+                )
+            )
+        )
+
+    ).order_by('-quantite_vendue', '-chiffre_affaires')[:5]
+
+    # ==========================================
+    # 6. DONNEES ENVOYEES AU TEMPLATE
+    # ==========================================
+
+    context = {
+        'total_produits': total_produits,
+        'total_categories': total_categories,
+        'total_clients': total_clients,
+
+        'total_ventes_jour': total_ventes_jour,
+        'chiffre_affaires_jour': chiffre_affaires_jour,
+        'chiffre_affaires_total': chiffre_affaires_total,
+
+        'produits_rupture': produits_rupture,
+        'produits_stock_bas': produits_stock_bas,
+        'stock_total': stock_total,
+        'valeur_stock': valeur_stock,
+
+        'lots_expiration': lots_expiration,
+        'dernieres_ventes': dernieres_ventes,
+        'top_medicaments': top_medicaments,
+
+        'top_medicaments': top_medicaments,
+    }
+
+    return render(request, "dashboard.html", context)
 
 
-class affichage(LoginRequiredMixin, ListView):
+class ListeProduits(LoginRequiredMixin, ListView):
 #   # utilisation  du templates
-    template_name = 'home.html'
+    template_name = 'liste_produits.html'
 #   # récupération du produit dans la base de données
     queryset = Produit.objects.all()
 
 
-class AjoutProduits(LoginRequiredMixin, CreateView):
+class AjoutProduit(LoginRequiredMixin, CreateView):
     # utilisation du modèle
     model = Produit
     # spécifier le formulaire à utiliser
@@ -52,7 +204,6 @@ def delete(request, id):
         produit.delete()
         return JsonResponse({'success': True, 'message':"Le produit à été supprimer avec succès"})
     return JsonResponse({'success': False, 'message': "Methode non autorisée"})
-
 
 class detail(LoginRequiredMixin, DetailView):
     model = Produit
@@ -82,7 +233,7 @@ def VenteProduits(request, id):
                 messages.error(request, "la quantité demandée est supérieure à votre stock")
             
             else:
-                customer, _ =Customer.objects.get_or_create(name = customer)
+                customer, _ =Client.objects.get_or_create(name = customer)
                 total_amount = produit.price * quantite
 
                 #créer la vente avec l'instance Customer 

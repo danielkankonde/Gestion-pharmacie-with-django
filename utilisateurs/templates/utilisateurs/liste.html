@@ -1,0 +1,77 @@
+{% extends "base_app.html" %}
+
+{% block titre %}Utilisateurs{% endblock %}
+
+{% block content %}
+<div class="entete">
+  <div>
+    <h1>Utilisateurs</h1>
+    <p>Gérez les comptes qui peuvent se connecter à l’application.</p>
+  </div>
+  <a class="btn btn-primaire" href="{% url 'utilisateur_creer' %}">
+    <svg class="ico"><use href="#i-plus"/></svg>Nouvel utilisateur
+  </a>
+</div>
+
+<div class="carte">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Rôle</th>
+          <th>Statut</th>
+          <th>Dernière connexion</th>
+          <th class="droite">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in utilisateurs %}
+        <tr class="{% if not u.is_active %}inactif{% endif %}">
+          <td>
+            <strong>{{ u.get_full_name|default:u.username }}</strong>
+            {% if u == user %}<span class="badge badge-gris">Vous</span>{% endif %}
+            <br><small>{{ u.username }}</small>
+          </td>
+          <td>
+            {% if u.is_superuser %}
+              <span class="badge badge-bleu">Propriétaire</span>
+            {% else %}
+              <span class="badge badge-gris">Vendeur</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.is_active %}
+              <span class="badge badge-vert">Actif</span>
+            {% else %}
+              <span class="badge badge-rouge">Désactivé</span>
+            {% endif %}
+          </td>
+          <td>{{ u.last_login|date:"d/m/Y H:i"|default:"Jamais" }}</td>
+          <td class="droite cellule-actions">
+            <a class="btn btn-secondaire btn-petit" href="{% url 'utilisateur_modifier' u.pk %}">Modifier</a>
+            <a class="btn btn-secondaire btn-petit" href="{% url 'utilisateur_motdepasse' u.pk %}">Mot de passe</a>
+            {% if u != user %}
+              <form method="post" action="{% url 'utilisateur_basculer' u.pk %}"
+                    onsubmit="return confirm('{% if u.is_active %}Désactiver{% else %}Réactiver{% endif %} ce compte ?');">
+                {% csrf_token %}
+                {% if u.is_active %}
+                  <button type="submit" class="btn btn-petit btn-danger-clair">Désactiver</button>
+                {% else %}
+                  <button type="submit" class="btn btn-petit btn-succes-clair">Réactiver</button>
+                {% endif %}
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p class="note">
+  Un compte désactivé ne peut plus se connecter, mais son historique de ventes est conservé.
+  Les comptes ne sont jamais supprimés.
+</p>
+{% endblock %}

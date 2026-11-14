@@ -1,0 +1,63 @@
+
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+        <div class="brand-icon">P</div>
+        <div>
+            <h4>PharmaGest</h4>
+            <small>Administration</small>
+        </div>
+    </div>
+
+    <div class="sidebar-menu">
+
+        <p class="menu-label">MENU PRINCIPAL</p>
+
+        <a href="{% url '/' %}"
+           class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span>⌂</span>
+            Tableau de bord
+        </a>
+        <a href="{% url 'dashboard' %}" class="{% if nom == 'dashboard' %}actif{% endif %}">
+            <svg class="ico"><use href="#i-home"/></svg>Accueil
+        </a>
+
+        <a href="{% url 'home' %}" class="{% if nom == 'home' or nom == 'ajout_produit' or nom == 'modifier' or nom == 'detail' or nom == 'recherche' %}actif{% endif %}">
+            <svg class="ico"><use href="#i-box"/></svg>Produits
+        </a>
+
+        <a href="{% url 'ajout_produit' %}"
+           class="sidebar-link {% if request.resolver_match.url_name == 'ajout_produit' %}active{% endif %}">
+            <span>＋</span>
+            Ajouter un produit
+        </a>
+
+        <p class="menu-label mt-4">GESTION</p>
+
+        <a href="#" class="sidebar-link">
+            <span>▤</span>
+            Stocks
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <span>↗</span>
+            Ventes
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <span>▧</span>
+            Fournisseurs
+        </a>
+
+        <a href="#" class="sidebar-link">
+            <span>♙</span>
+            Clients
+        </a>
+
+    </div>
+
+    <div class="sidebar-footer">
+        <small>PharmaGest © 2026</small>
+    </div>
+
+</aside>

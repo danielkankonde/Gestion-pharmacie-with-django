@@ -1,0 +1,36 @@
+{% extends "base_app.html" %}
+
+{% block titre %}{{ titre }}{% endblock %}
+
+{% block content %}
+<div class="entete">
+  <div>
+    <h1>{{ titre }}</h1>
+    {% if sous_titre %}<p>{{ sous_titre }}</p>{% endif %}
+  </div>
+</div>
+
+<div class="carte carte-formulaire">
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alerte alerte-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for field in form %}
+      <div class="groupe">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<small class="aide">{{ field.help_text|safe }}</small>{% endif %}
+        {% for e in field.errors %}<small class="erreur">{{ e }}</small>{% endfor %}
+      </div>
+    {% endfor %}
+
+    <div class="actions-form">
+      <button type="submit" class="btn btn-primaire">{{ bouton|default:"Enregistrer" }}</button>
+      <a class="btn btn-secondaire" href="{{ retour|default:'/' }}">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

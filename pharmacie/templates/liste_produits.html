@@ -1,0 +1,173 @@
+{% extends "base_app.html" %}
+{% load static %}
+
+{% block titre %}Inventaire des médicaments{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- En-tête -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">Inventaire des médicaments</h2>
+            <p class="text-muted mb-0">
+                Consultez et gérez les médicaments de votre pharmacie.
+            </p>
+        </div>
+
+        <a href="{% url 'ajout_produit' %}" class="btn btn-primary">
+            + Nouveau médicament
+        </a>
+
+    </div>
+
+    <!-- Tableau -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-3 py-3">Médicament</th>
+                            <th>Catégorie</th>
+                            <th>Prix de vente</th>
+                            <th>Stock disponible</th>
+                            <th>État du stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for produit in object_list %}
+
+                        <tr>
+
+                            <!-- Médicament -->
+                            <td class="px-3">
+                                <div class="d-flex align-items-center gap-3">
+
+                                    {% if produit.image %}
+                                        <img src="{{ produit.image.url }}"
+                                             alt="{{ produit.name }}"
+                                             width="45"
+                                             height="45"
+                                             class="rounded object-fit-cover">
+                                    {% else %}
+                                        <div class="rounded bg-light border d-flex align-items-center justify-content-center fw-bold text-primary"
+                                             style="width:45px;height:45px;">
+                                            {{ produit.name|first|upper }}
+                                        </div>
+                                    {% endif %}
+
+                                    <div>
+                                        <div class="fw-semibold">
+                                            {{ produit.name }}
+                                        </div>
+
+                                        <small class="text-muted">
+                                            {{ produit.dci|default:"DCI non renseignée" }}
+                                            ·
+                                            {{ produit.dosage|default:"Dosage non renseigné" }}
+                                        </small>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                            <!-- Catégorie -->
+                            <td>
+                                {{ produit.categorie.name }}
+                            </td>
+
+                            <!-- Prix -->
+                            <td class="fw-semibold">
+                                {{ produit.prix_vente }}
+                            </td>
+
+                            <!-- Stock -->
+                            <td>
+                                <span class="fw-bold">
+                                    {{ produit.stock_total }}
+                                </span>
+                                <small class="text-muted">unités</small>
+                            </td>
+
+                            <!-- État du stock -->
+                            <td>
+
+                                {% if produit.statut_stock == 'rupture' %}
+
+                                    <span class="badge bg-danger">
+                                        Rupture
+                                    </span>
+
+                                {% elif produit.statut_stock == 'bas' %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Stock bas
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-success">
+                                        Disponible
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- Actions -->
+                            <td>
+                                <div class="d-flex gap-2">
+
+                                    <a href="{% url 'detail' produit.pk %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Voir
+                                    </a>
+
+                                    <a href="{% url 'modifier' produit.pk %}"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Modifier
+                                    </a>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+
+                                <div class="text-muted">
+                                    <h5>Aucun médicament enregistré</h5>
+                                    <p class="mb-0">
+                                        Commencez par ajouter un médicament.
+                                    </p>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

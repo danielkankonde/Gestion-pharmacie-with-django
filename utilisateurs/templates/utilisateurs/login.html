@@ -1,0 +1,57 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion · Gestion Pharmacie</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="page-login">
+{% include "partials/icones.html" %}
+
+<main class="login-carte">
+  <div class="login-marque">
+    <span class="logo"><svg class="ico"><use href="#i-croix"/></svg></span>
+    <h1>Gestion Pharmacie</h1>
+    <p>Connectez-vous pour accéder à la caisse</p>
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="alerte alerte-error">{{ form.non_field_errors.0 }}</div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+
+    <div class="groupe">
+      <label for="{{ form.username.id_for_label }}">Identifiant</label>
+      {{ form.username }}
+      {% for e in form.username.errors %}<small class="erreur">{{ e }}</small>{% endfor %}
+    </div>
+
+    <div class="groupe">
+      <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+      <div class="champ-mdp">
+        {{ form.password }}
+        <button type="button" class="oeil" id="oeil" aria-label="Afficher ou masquer le mot de passe">
+          <svg class="ico"><use href="#i-oeil"/></svg>
+        </button>
+      </div>
+      {% for e in form.password.errors %}<small class="erreur">{{ e }}</small>{% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primaire btn-bloc">Se connecter</button>
+  </form>
+
+  <p class="login-pied">Mot de passe oublié ? Contactez le propriétaire de la pharmacie.</p>
+</main>
+
+<script>
+  document.getElementById('oeil').addEventListener('click', function () {
+    var champ = document.getElementById('{{ form.password.id_for_label }}');
+    champ.type = champ.type === 'password' ? 'text' : 'password';
+  });
+</script>
+</body>
+</html>
